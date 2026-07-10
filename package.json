@@ -1,0 +1,47 @@
+{
+  "name": "@transfashion/jfxpos-server",
+  "version": "0.1.0",
+  "description": "server for jfxpos",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "server": "node .",
+    "debug": "nodemon .",
+    "generate": "node ./generate.js",
+    "x-generate": "node ./node_modules/@agung_dhewe/webapps/src/generator/trygenerate.js",
+    "clean": "kill -9 $(lsof -t -i :3003)"
+  },
+  "author": "Agung Nugroho",
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@agung_dhewe/pgsqlc": "^1.1.8",
+    "@agung_dhewe/webapps": "^1.2.11",
+    "bcrypt": "^6.0.0",
+    "connect-redis": "^9.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.16.2",
+    "pg-promise": "^11.14.0",
+    "redis": "^5.5.6",
+    "serve-favicon": "^2.5.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^1.0.0",
+    "cssnano": "^7.1.2",
+    "kill-port": "^2.0.1",
+    "postcss-import": "^16.1.1",
+    "rollup": "^4.59.0",
+    "rollup-plugin-delete": "^3.0.2",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}

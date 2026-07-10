@@ -1,0 +1,50 @@
+{
+	"folders": [
+		{
+			"name": "JFxPOS-server",
+			"path": "."
+		}
+	],
+	"settings": {
+		"keybindings": [
+			{
+				"key": "tab",
+				"command": "acceptSelectedSuggestion",
+				"when": "acceptSuggestionOnEnter && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && suggestionMakesTextEdit && textInputFocus"
+			},
+			{
+				"key": "enter",
+				"command": "-acceptSelectedSuggestion",
+				"when": "acceptSuggestionOnEnter && suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && suggestionMakesTextEdit && textInputFocus"
+			}
+		],
+		"editor.insertSpaces": false,
+		"[html]": {
+			"editor.formatOnSave": false
+		},
+		"[ejs]": {
+			"editor.formatOnSave": false
+		},
+		"files.watcherExclude": {
+			"**/node_modules": true
+		},
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Chrome",
+				"request": "launch",
+				"type": "chrome",
+				"url": "https://act-dev.transfashion.id",
+				"webRoot": "${workspaceFolder}",
+				"windows": {
+					"userDataDir": "C:/Users/agung/.vscode/chrome-profile-core"
+				},
+				"linux": {
+					"userDataDir": "/home/agung/.vscode/chrome-profile-core"
+				}
+			}
+		]
+	}
+}
