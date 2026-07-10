@@ -7,7 +7,8 @@
   "scripts": {
     "server": "node .",
     "debug": "nodemon .",
-    "generate": "node ./generate.js"
+    "generate": "node ./generate.js",
+    "setupdb": "node ./src/setupdb.js"
   },
   "author": "Agung Nugroho",
   "license": "BSD-3-Clause",
