@@ -1,5 +1,5 @@
 {
-  "name": "@transfashion/jfxpos-server",
+  "name": "@myuser/jfxpos-server",
   "version": "0.1.0",
   "description": "server for jfxpos",
   "type": "module",
@@ -8,7 +8,7 @@
     "server": "node .",
     "debug": "nodemon .",
     "generate": "node ./generate.js",
-    "setupdb": "node ./src/setupdb.js"
+    "setup": "node ./src/setup.js"
   },
   "author": "Agung Nugroho",
   "license": "BSD-3-Clause",
