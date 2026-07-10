@@ -92,7 +92,7 @@ async function main() {
 		allowedOrigins: [
 			// /^https:\/\/[a-z0-9.-]+\.transfashion\.id(:\d+)?$/,
 			new RegExp(`^https?://[a-z0-9.-]*${escapedDomain}(:\\d+)?$`),
-			/^http:\/\/localhost:3005(:\d+)?$/
+			new RegExp(`^http://localhost:${port}(:\\d+)?$`)
 		],
 		fnParseModuleRequest: async (req) => {
 			await authorizeRequest(db, req)
