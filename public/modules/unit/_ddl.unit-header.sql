@@ -133,20 +133,11 @@ comment on column public."unit"._modifydate is 'waktu terakhir record dimodifika
 
 
 
--- =============================================
--- FOREIGN KEY CONSTRAINT
--- =============================================
--- Add Foreign Key Constraint  	
 
 
 -- =============================================
 -- UNIQUE INDEX
 -- =============================================
--- Drop existing unique index 
-alter table public."unit"
-	drop constraint uq$public$unit$unit_name;
-	
-
 -- Add unique index 
 alter table  public."unit"
 	add constraint uq$public$unit$unit_name unique (unit_name); 

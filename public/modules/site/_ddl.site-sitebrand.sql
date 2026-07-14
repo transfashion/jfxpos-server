@@ -138,7 +138,6 @@ comment on column public."sitebrand"._modifydate is 'waktu terakhir record dimod
 -- =============================================
 -- Drop Existing Foreign Key Constraint 
 ALTER TABLE public."sitebrand" DROP CONSTRAINT fk$public$sitebrand$brand_id;
-ALTER TABLE public."sitebrand" DROP CONSTRAINT fk$public$sitebrand$site_id;
 
 
 -- Add Foreign Key Constraint  
@@ -151,17 +150,6 @@ ALTER TABLE public."sitebrand"
 -- Add As Index, drop dulu jika sudah ada
 DROP INDEX IF EXISTS public.idx_fk$public$sitebrand$brand_id;
 CREATE INDEX idx_fk$public$sitebrand$brand_id ON public."sitebrand"(brand_id);	
-
-
-ALTER TABLE public."sitebrand"
-	ADD CONSTRAINT fk$public$sitebrand$site_id
-	FOREIGN KEY (site_id)
-	REFERENCES public."site"(site_id);
-
-
--- Add As Index, drop dulu jika sudah ada
-DROP INDEX IF EXISTS public.idx_fk$public$sitebrand$site_id;
-CREATE INDEX idx_fk$public$sitebrand$site_id ON public."sitebrand"(site_id);	
 
 	
 

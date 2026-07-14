@@ -163,10 +163,6 @@ comment on column public."site"._modifydate is 'waktu terakhir record dimodifika
 
 
 
--- =============================================
--- FOREIGN KEY CONSTRAINT
--- =============================================
--- Add Foreign Key Constraint  	
 
 
 -- =============================================

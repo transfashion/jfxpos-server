@@ -1,7 +1,7 @@
 {
   "appname": "jfxpos-server",
   "name": "brand",
-  "directory": "/Volumes/Development/transfashion/jfxpos-server",
+  "directory": "C:\\Users\\agung\\Development\\transfashion\\jfxpos-server",
   "title": "Brand",
   "description": "daftar brand",
   "icon": "",
@@ -82,6 +82,7 @@
             "bindingValue": "",
             "bindingText": null,
             "bindingDisplay": null,
+            "bindingConstraint": false,
             "loaderApiModule": null,
             "loaderApiPath": null
           },
@@ -148,6 +149,7 @@
             "bindingValue": null,
             "bindingText": null,
             "bindingDisplay": null,
+            "bindingConstraint": false,
             "loaderApiModule": null,
             "loaderApiPath": null
           },
@@ -214,6 +216,7 @@
             "bindingValue": "",
             "bindingText": null,
             "bindingDisplay": null,
+            "bindingConstraint": false,
             "loaderApiModule": null,
             "loaderApiPath": null
           },
@@ -280,6 +283,7 @@
             "bindingValue": "",
             "bindingText": null,
             "bindingDisplay": null,
+            "bindingConstraint": false,
             "loaderApiModule": null,
             "loaderApiPath": null
           },
@@ -346,6 +350,7 @@
             "bindingValue": "unit_id",
             "bindingText": "unit_name",
             "bindingDisplay": "",
+            "bindingConstraint": true,
             "loaderApiModule": "/",
             "loaderApiPath": "unit/header-list"
           },

@@ -25,14 +25,14 @@
 	}
 	
 	#siteSitebrandEdit-obj_brand_id-container {
-		grid-row: auto;
-		grid-column: 1 / span 2;
+		grid-row: 1;
+		grid-column: 1 / span 4;
 		
 	}
 	
 	#siteSitebrandEdit-obj_sitebrand_isdisabled-container {
-		grid-row: auto;
-		grid-column: 1 / span 2;
+		grid-row: 1;
+		grid-column: 5 / span 2;
 		
 	}
 	
