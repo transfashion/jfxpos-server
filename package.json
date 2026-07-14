@@ -1,5 +1,5 @@
 {
-  "name": "@myuser/jfxpos-server",
+  "name": "@transfashion/jfxpos-server",
   "version": "0.1.0",
   "description": "server for jfxpos",
   "type": "module",

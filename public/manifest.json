@@ -19,7 +19,7 @@
 	"display": "standalone",
 	"dir": "auto",
 	"lang": "en-US",
-	"name": "Accounting",
-	"short_name": "Accounting",
+	"name": "JFxPosServer",
+	"short_name": "JFxPosServer",
 	"start_url": "/"
 }
