@@ -3,6 +3,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
+import bcrypt from 'bcrypt';
 
 /**
  * Mendapatkan direktori root project
@@ -65,36 +66,39 @@ function askPassword(query) {
 
 		let password = '';
 		
-		const onData = (char) => {
-			char = char.toString();
-			switch (char) {
-				case '\n':
-				case '\r':
-				case '\u0004': // End of transmission
-					stdin.removeListener('data', onData);
-					stdin.setRawMode(false);
-					stdin.pause();
-					process.stdout.write('\n');
-					resolve(password);
-					break;
-				case '\u0003': // Ctrl+C
-					stdin.removeListener('data', onData);
-					stdin.setRawMode(false);
-					stdin.pause();
-					process.stdout.write('\n');
-					process.exit(130);
-					break;
-				case '\u0008':
-				case '\x7f': // Backspace
-					if (password.length > 0) {
-						password = password.slice(0, -1);
-						process.stdout.write('\b \b');
-					}
-					break;
-				default:
-					password += char;
-					process.stdout.write('*');
-					break;
+		const onData = (chunk) => {
+			chunk = chunk.toString();
+			for (let i = 0; i < chunk.length; i++) {
+				const char = chunk[i];
+				switch (char) {
+					case '\n':
+					case '\r':
+					case '\u0004': // End of transmission
+						stdin.removeListener('data', onData);
+						stdin.setRawMode(false);
+						stdin.pause();
+						process.stdout.write('\n');
+						resolve(password);
+						return;
+					case '\u0003': // Ctrl+C
+						stdin.removeListener('data', onData);
+						stdin.setRawMode(false);
+						stdin.pause();
+						process.stdout.write('\n');
+						process.exit(130);
+						return;
+					case '\u0008':
+					case '\x7f': // Backspace
+						if (password.length > 0) {
+							password = password.slice(0, -1);
+							process.stdout.write('\b \b');
+						}
+						break;
+					default:
+						password += char;
+						process.stdout.write('*');
+						break;
+				}
 			}
 		};
 		
@@ -167,6 +171,11 @@ async function runSetup() {
 		const projectNameInput = await askQuestion(`Masukkan nama project [${defaultProjectName}]: `);
 		const projectName = projectNameInput.trim() || defaultProjectName;
 
+		// Tanya title project (default nama project)
+		const defaultProjectTitle = projectName;
+		const projectTitleInput = await askQuestion(`Masukkan title project [${defaultProjectTitle}]: `);
+		const projectTitle = projectTitleInput.trim() || defaultProjectTitle;
+
 		// 2. Tanya nama repo (default @myuser/namaproject)
 		const defaultRepoName = `@myuser/${projectName}`;
 		const repoNameInput = await askQuestion(`Masukkan nama repo [${defaultRepoName}]: `);
@@ -187,6 +196,13 @@ async function runSetup() {
 		// Tanya Service Port
 		const servicePortInput = await askQuestion(`Masukkan port service [${defaultServicePort}]: `);
 		const servicePort = servicePortInput.trim() || defaultServicePort;
+
+		// Tanya default username & password
+		const defaultUserInput = await askQuestion(`Masukkan default username [admin]: `);
+		const defaultUser = defaultUserInput.trim() || 'admin';
+
+		const defaultPassInput = await askPassword(`Masukkan default password [admin]: `);
+		const defaultPass = defaultPassInput || 'admin';
 
 		// Loop input database sampai koneksi berhasil
 		let dbConfig = { host: 'localhost', port: 5432, user: 'postgres', password: '' };
@@ -211,15 +227,17 @@ async function runSetup() {
 		console.log('✅ Koneksi database berhasil verifikasi.');
 
 		// Tanya nama database (default project name)
-		const defaultDbName = projectName;
+		const defaultDbName = `${projectName}-db`;
 		const dbNameInput = await askQuestion(`\nMasukkan nama database [${defaultDbName}]: `);
 		const dbname = dbNameInput.trim() || defaultDbName;
 
 		// 3. Konfirmasi bersama-sama sebelum eksekusi
 		console.log('\n⚠️  \x1b[31mPERHATIAN:\x1b[0m Anda akan melakukan setup dengan konfigurasi berikut:');
 		console.log(`   Nama Project : \x1b[33m${projectName}\x1b[0m`);
+		console.log(`   Title Project: \x1b[33m${projectTitle}\x1b[0m`);
 		console.log(`   Nama Repo    : \x1b[33m${repoName}\x1b[0m`);
 		console.log(`   Service Port : \x1b[33m${servicePort}\x1b[0m`);
+		console.log(`   Default User : \x1b[33m${defaultUser}\x1b[0m`);
 		console.log(`   DB Host      : \x1b[33m${dbConfig.host}\x1b[0m`);
 		console.log(`   DB Port      : \x1b[33m${dbConfig.port}\x1b[0m`);
 		console.log(`   DB User      : \x1b[33m${dbConfig.user}\x1b[0m`);
@@ -242,11 +260,35 @@ async function runSetup() {
 		await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf-8');
 		console.log('✅ package.json berhasil diupdate.');
 
+		// Copy dan update .code-workspace
+		console.log('✍️  Membuat dan mengupdate file workspace...');
+		const workspaceSrcPath = path.join(rootDir, '.code-workspace');
+		const workspaceContent = await fs.readFile(workspaceSrcPath, 'utf-8');
+		const workspaceJson = JSON.parse(workspaceContent);
+		
+		if (workspaceJson.folders && workspaceJson.folders.length > 0) {
+			workspaceJson.folders[0].name = projectName;
+		}
+		
+		if (workspaceJson.launch && Array.isArray(workspaceJson.launch.configurations)) {
+			for (const config of workspaceJson.launch.configurations) {
+				if (config.url) {
+					config.url = `http://localhost:${servicePort}`;
+				}
+			}
+		}
+		
+		const workspaceDestPath = path.join(rootDir, `${projectName}.code-workspace`);
+		await fs.writeFile(workspaceDestPath, JSON.stringify(workspaceJson, null, 2), 'utf-8');
+		console.log(`✅ File ${projectName}.code-workspace berhasil dibuat.`);
+
 		// Copy .env-example ke .env dan update nilainya
 		console.log('✍️  Membuat dan mengupdate file .env dari .env-example...');
 		const envKeys = {
 			PORT: servicePort,
 			APPNAME: projectName,
+			APPTITLE: projectTitle,
+			APPTILE: projectTitle,
 			DB_HOST: dbConfig.host,
 			DB_PORT: dbConfig.port,
 			DB_USER: dbConfig.user,
@@ -276,6 +318,18 @@ async function runSetup() {
 		await fs.writeFile(path.join(rootDir, '.env'), envContent, 'utf-8');
 		console.log('✅ File .env berhasil dibuat dan diupdate.');
 
+		// Mengganti {nama project} di login.html dengan nama project yang sebenarnya
+		try {
+			console.log('✍️  Mengupdate nama project di login.html...');
+			const loginHtmlPath = path.join(rootDir, 'public', 'modules', 'login', 'login.html');
+			let loginHtmlContent = await fs.readFile(loginHtmlPath, 'utf-8');
+			loginHtmlContent = loginHtmlContent.replace(/{nama project}/g, projectName);
+			await fs.writeFile(loginHtmlPath, loginHtmlContent, 'utf-8');
+			console.log('✅ File login.html berhasil diupdate.');
+		} catch (e) {
+			console.warn('⚠️ Gagal mengupdate login.html:', e.message);
+		}
+
 		// Pastikan Database target ada
 		await createDatabaseIfNotExists(dbConfig, dbname);
 
@@ -294,13 +348,42 @@ async function runSetup() {
 		for (const filePath of sqlFiles) {
 			const fileName = path.basename(filePath);
 			console.log(`📄 Membaca file: \x1b[36m${fileName}\x1b[0m`);
-			const sqlContent = await fs.readFile(filePath, 'utf-8');
+			let sqlContent = await fs.readFile(filePath, 'utf-8');
+
+			if (fileName === 'core_sample_data.sql') {
+				console.log(`🔧 Menyesuaikan data konfigurasi pada ${fileName}...`);
+				// Ganti apps_id dan apps_name dengan projectName
+				sqlContent = sqlContent.replace(/'accounting'/g, `'${projectName}'`);
+				sqlContent = sqlContent.replace(/'Accounting Apps'/g, `'${projectName}'`);
+
+				// Ganti apps_url dengan localhost dan port service yang diinput
+				sqlContent = sqlContent.replace(/'https:\/\/act-dev\.transfashion\.id'/g, `'http://localhost:${servicePort}'`);
+
+				// Ganti user_name, user_nickname, user_fullname, dan user_password dengan default user & hashed password
+				const saltRounds = 10;
+				const hashedPass = await bcrypt.hash(defaultPass, saltRounds);
+				sqlContent = sqlContent.replace(
+					/VALUES\s*\(\s*240100000\s*,\s*'[^']+'\s*,\s*'[^']+'\s*,\s*'[^']+'\s*,\s*'[^']+'\s*,\s*'[^']+'/g,
+					`VALUES (240100000, '${defaultUser}', '${defaultUser}', '${defaultUser}', 'your@email.com', '${hashedPass}'`
+				);
+			}
+
 			console.log(`⚡ Mengeksekusi ${fileName} pada database...`);
 			await db.none(sqlContent);
 			console.log(`✅ Berhasil mengeksekusi \x1b[32m${fileName}\x1b[0m\n`);
 		}
 
 		console.log('🎉 Setup database dan konfigurasi project selesai dengan sukses!');
+
+		if (process.platform === 'linux' || process.platform === 'darwin') {
+			try {
+				await fs.chmod(path.join(rootDir, 'run'), 0o755);
+				console.log('✅ File run berhasil diubah menjadi executable.');
+			} catch (e) {
+				console.warn('⚠️ Gagal mengubah permission file run:', e.message);
+			}
+		}
+
 		process.exit(0);
 	} catch (error) {
 		console.error('\n❌ \x1b[31mError saat setup:\x1b[0m', error.message || error);

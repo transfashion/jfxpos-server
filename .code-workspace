@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"name": "",
+			"path": "."
+		}
+	],
+	"settings": {
+		"keybindings": [],
+		"editor.insertSpaces": false,
+		"[html]": {
+			"editor.formatOnSave": false
+		},
+		"[ejs]": {
+			"editor.formatOnSave": false
+		},
+		"files.watcherExclude": {
+			"**/node_modules": true
+		}
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Chrome",
+				"request": "launch",
+				"type": "chrome",
+				"url": "",
+				"webRoot": "${workspaceFolder}"
+			}
+		]
+	}
+}

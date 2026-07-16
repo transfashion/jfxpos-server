@@ -12,7 +12,12 @@
 
 	<link rel="manifest" href="/public/manifest.json">
 	<link rel="icon" type="image/svg+xml" href="/public/favicon.svg">
+
+	<% if (iconMenuUrl) { %>
 	<link id="main-menu-icon" rel="preload" href="<%= iconMenuUrl %>" as="image">
+	<% } else { %>	
+	<link id="main-menu-icon">	
+	<% } %>	
 
 
 	<% if (fgta5jsDebugMode) { %>
